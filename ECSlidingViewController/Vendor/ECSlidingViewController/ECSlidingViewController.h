@@ -196,11 +196,32 @@ typedef enum {
  */
 - (void)anchorTopViewTo:(ECSide)side animations:(void(^)())animations onComplete:(void(^)())complete;
 
+/** Slides the top view in the direction of the specified side.
+ 
+ A peek amount or reveal amount must be set for the given side. The top view will anchor to one of those specified values.
+ 
+ @param side The side for the top view to slide towards.
+ @param duration Animation duration
+ @param animations Perform changes to properties that will be animated while top view is moved off screen. Can be nil.
+ @param onComplete Executed after the animation is completed. Can be nil.
+ */
+- (void)anchorTopViewTo:(ECSide)side duration:(NSTimeInterval)duration animations:(void(^)())animations onComplete:(void (^)())complete;
+
 /** Slides the top view off of the screen in the direction of the specified side.
  
  @param side The side for the top view to slide off the screen towards.
  */
 - (void)anchorTopViewOffScreenTo:(ECSide)side;
+
+/** Slides the top view off of the screen in the direction of the specified side.
+ 
+ @param side The side for the top view to slide off the screen towards.
+ @param duration Animation duration
+ @param animations Perform changes to properties that will be animated while top view is moved off screen. Can be nil.
+ @param onComplete Executed after the animation is completed. Can be nil.
+ @param update If YES perform slide back of current view
+ */
+- (void)anchorTopViewOffScreenTo:(ECSide)side duration:(NSTimeInterval)duration animations:(void(^)())animations onComplete:(void(^)())complete updateHorizontalCenter:(BOOL)update;
 
 /** Slides the top view off of the screen in the direction of the specified side.
  
@@ -214,11 +235,25 @@ typedef enum {
 - (void)resetTopView;
 
 /** Slides the top view back to the center.
+ 
+ @param duration Animation duration
+ */
+- (void)resetTopView:(NSTimeInterval)duration;
+
+/** Slides the top view back to the center.
 
  @param animations Perform changes to properties that will be animated while top view is moved back to the center of the screen. Can be nil.
  @param onComplete Executed after the animation is completed. Can be nil.
  */
 - (void)resetTopViewWithAnimations:(void(^)())animations onComplete:(void(^)())complete;
+
+/** Slides the top view back to the center.
+ 
+ @param animations Perform changes to properties that will be animated while top view is moved back to the center of the screen. Can be nil.
+ @param duration Animation duration
+ @param onComplete Executed after the animation is completed. Can be nil.
+ */
+- (void)resetTopViewWithAnimations:(void(^)())animations duration:(NSTimeInterval)duration onComplete:(void(^)())complete;
 
 /** Returns true if the underLeft view is showing (even partially) */
 - (BOOL)underLeftShowing;

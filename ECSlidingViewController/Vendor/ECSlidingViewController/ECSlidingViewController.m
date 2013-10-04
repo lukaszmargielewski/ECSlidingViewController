@@ -31,7 +31,7 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
 @property (nonatomic, assign) BOOL topViewIsOffScreen;
 
 - (void)setup;
-- (NSUInteger)autoResizeToFillScreen;
+- (UIViewAutoresizing)autoResizeToFillScreen;
 - (UIView *)topView;
 - (UIView *)underLeftView;
 - (UIView *)underRightView;
@@ -323,6 +323,11 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
 
 - (void)anchorTopViewTo:(ECSide)side animations:(void (^)())animations onComplete:(void (^)())complete
 {
+  [self anchorTopViewTo:side duration:0.25f animations:animations onComplete:complete];
+}
+
+- (void)anchorTopViewTo:(ECSide)side duration:(NSTimeInterval)duration animations:(void(^)())animations onComplete:(void (^)())complete
+{
   CGFloat newCenter = self.topView.center.x;
   
   if (side == ECLeft) {
@@ -332,8 +337,8 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
   }
   
   [self topViewHorizontalCenterWillChange:newCenter];
-  
-  [UIView animateWithDuration:0.25f animations:^{
+
+  [UIView animateWithDuration:duration animations:^{
     if (animations) {
       animations();
     }
@@ -363,6 +368,11 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
 
 - (void)anchorTopViewOffScreenTo:(ECSide)side animations:(void(^)())animations onComplete:(void(^)())complete
 {
+  [self anchorTopViewOffScreenTo:side duration:0.25f animations:animations onComplete:complete updateHorizontalCenter:YES];
+}
+
+- (void)anchorTopViewOffScreenTo:(ECSide)side duration:(NSTimeInterval)duration animations:(void(^)())animations onComplete:(void(^)())complete updateHorizontalCenter:(BOOL)update
+{
   CGFloat newCenter = self.topView.center.x;
   
   if (side == ECLeft) {
@@ -372,12 +382,14 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
   }
   
   [self topViewHorizontalCenterWillChange:newCenter];
-  
-  [UIView animateWithDuration:0.25f animations:^{
+
+  [UIView animateWithDuration:duration animations:^{
     if (animations) {
       animations();
     }
-    [self updateTopViewHorizontalCenter:newCenter];
+    if (update) {
+      [self updateTopViewHorizontalCenter:newCenter];
+    }
   } completion:^(BOOL finished){
     if (complete) {
       complete();
@@ -399,11 +411,19 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
   [self resetTopViewWithAnimations:nil onComplete:nil];
 }
 
-- (void)resetTopViewWithAnimations:(void(^)())animations onComplete:(void(^)())complete
+- (void)resetTopView:(NSTimeInterval)duration
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[NSNotificationCenter defaultCenter] postNotificationName:ECSlidingViewTopWillReset object:self userInfo:nil];
+  });
+  [self resetTopViewWithAnimations:nil duration:duration onComplete:nil];
+}
+
+- (void)resetTopViewWithAnimations:(void(^)())animations duration:(NSTimeInterval)duration onComplete:(void(^)())complete
 {
   [self topViewHorizontalCenterWillChange:self.resettedCenter];
-  
-  [UIView animateWithDuration:0.25f animations:^{
+
+  [UIView animateWithDuration:duration animations:^{
     if (animations) {
       animations();
     }
@@ -416,7 +436,12 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
   }];
 }
 
-- (NSUInteger)autoResizeToFillScreen
+- (void)resetTopViewWithAnimations:(void(^)())animations onComplete:(void(^)())complete
+{
+  [self resetTopViewWithAnimations:animations duration:0.25f onComplete:complete];
+}
+
+- (UIViewAutoresizing)autoResizeToFillScreen
 {
   return (UIViewAutoresizingFlexibleWidth |
           UIViewAutoresizingFlexibleHeight |
