@@ -693,4 +693,24 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
     }
 }
 
+-(void)viewDidLayoutSubviews{
+    
+    //self.view.layer.borderWidth = 7.0;
+    //self.view.layer.borderColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.5].CGColor;
+    CGRect b = self.view.bounds;
+    CGFloat y = CGRectGetMinY(b);
+    CGFloat h = CGRectGetHeight(b);
+    
+    CGRect fl = self.underLeftViewController.view.frame;
+    CGRect ft = self.topViewController.view.frame;
+    CGRect fr = self.underRightViewController.view.frame;
+    
+    fl.origin.y = ft.origin.y = fr.origin.y = y;
+    fl.size.height = ft.size.height = fr.size.height = h;
+    
+    self.underLeftViewController.view.frame = fl;
+    self.topViewController.view.frame = ft;
+    self.underRightViewController.view.frame = fr;
+    
+}
 @end
